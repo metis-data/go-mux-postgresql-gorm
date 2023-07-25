@@ -1,0 +1,1 @@
+bash -c 'cd src && go mod download && go test -v'

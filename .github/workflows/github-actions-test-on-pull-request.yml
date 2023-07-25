@@ -1,0 +1,26 @@
+name: Test application on Pull Request
+run-name: Test application on Pull Request
+on: [pull_request]
+env:
+  METIS_API_KEY: ${{ vars.METIS_API_KEY }}
+  TOKEN_FOR_GITHUB_ACTION: ${{ secrets.PR_TOKEN_GITHUB }}
+  MOCK_CONTAINER_DEPENDENCIES: true
+
+jobs:
+  Run-Tests-With-Metis-On-Pull-Request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure metis PR
+        id: tag_pr
+        uses: metis-data/test-queries-analyzer@v1
+        with:
+          metis_api_key: ${{ vars.METIS_API_KEY }}
+          github_token: ${{ secrets.PR_TOKEN_GITHUB }}
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install modules
+        run: cd src && go mod download
+      - name: Run tests
+        run: cd src &&  MOCK_CONTAINER_DEPENDENCIES=true go test -v
+        env:
+          METIS_TAG_PR: ${{ steps.tag_pr.outputs.pr_tag  }}

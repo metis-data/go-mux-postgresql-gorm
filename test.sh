@@ -1,0 +1,1 @@
+bash -c 'cd src && go mod download && MOCK_CONTAINER_DEPENDENCIES=true go test -v'

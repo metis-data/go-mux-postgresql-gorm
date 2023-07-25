@@ -1,0 +1,17 @@
+name: Test application on Push
+run-name: Test application on Push
+on: [push]
+env:
+  METIS_API_KEY: ${{ vars.METIS_API_KEY }}
+  MOCK_CONTAINER_DEPENDENCIES: true
+
+jobs:
+  Run-Tests-With-Metis-On-Push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install modules
+        run: cd src && go mod download
+      - name: Run tests
+        run: cd src && MOCK_CONTAINER_DEPENDENCIES=true go test -v

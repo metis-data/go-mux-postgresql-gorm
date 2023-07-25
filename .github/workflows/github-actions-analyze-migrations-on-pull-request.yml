@@ -1,0 +1,19 @@
+name: Analyze schema migrations on Pull Request
+run-name: Analyze schema migrations on Pull Request
+on: [pull_request]
+
+jobs:
+  Analyze-Schema-Migrations-With-Metis-On-Pull-Request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Analyze migrations
+        uses: metis-data/sql-migrations-validator@v1
+        with:
+          from: ${{ github.event.pull_request.base.sha }}
+          to: ${{ github.event.pull_request.head.sha }}
+          github_token: ${{ secrets.PR_TOKEN_GITHUB }}
+          metis_api_key: ${{ vars.METIS_API_KEY }}

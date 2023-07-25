@@ -1,0 +1,29 @@
+name: Test application on Push with external dependencies
+run-name: Test application on Push with external dependencies
+on: [push]
+
+jobs:
+  Run-Tests-With-Metis-On-Push:
+    runs-on: ubuntu-latest
+    services:
+      database:
+        image: public.ecr.aws/o2c0x5x8/metis-demo-mini-db:latest
+        ports:
+           - 5432:5432
+
+      otelcollector:
+        image: public.ecr.aws/o2c0x5x8/metis-otel-collector:latest
+        ports:
+           - 4318:4318
+        env:
+          CONNECTION_STRING: postgresql://postgres:postgres@database:5432/demo?schema=imdb
+          METIS_API_KEY: ${{ vars.METIS_API_KEY }}
+          LOG_LEVEL: debug
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install modules
+        run: cd src && go mod download
+      - name: Run tests
+        run: cd src && go test -v
